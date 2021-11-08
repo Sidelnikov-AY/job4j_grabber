@@ -17,7 +17,7 @@ public class AlertRabbit {
             scheduler.start();
             JobDetail job = newJob(Rabbit.class).build();
             SimpleScheduleBuilder times = simpleSchedule()
-                    .withIntervalInSeconds(ReadProperties())
+                    .withIntervalInSeconds(readProperties())
                     .repeatForever();
             Trigger trigger = newTrigger()
                     .startNow()
@@ -36,7 +36,7 @@ public class AlertRabbit {
         }
     }
 
-    public static int ReadProperties() throws FileNotFoundException {
+    public static int readProperties() throws FileNotFoundException {
         Properties config = new Properties();
         try (InputStream io = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
             config.load(io);
