@@ -24,7 +24,7 @@ public class AlertRabbit {
 
     public static void main(String[] args) {
 
-        AlertRabbit ar= new AlertRabbit();
+        AlertRabbit ar = new AlertRabbit();
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
