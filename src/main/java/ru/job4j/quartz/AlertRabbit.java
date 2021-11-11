@@ -16,9 +16,6 @@ import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
 
-    private static Connection cn;
-    private static LocalDateTime created = LocalDateTime.now();
-
     public AlertRabbit() {
     }
 
@@ -29,7 +26,8 @@ public class AlertRabbit {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
-            int interval = ar.readProperties();
+            int interval = Integer.parseInt(ar.readProperties().getProperty("rabbit.interval"));
+            try (Connection cn = ar.initCon(ar.readProperties())) {
                 data.put("postgresql", cn);
                 JobDetail job = newJob(Rabbit.class)
                         .usingJobData(data)
@@ -43,28 +41,29 @@ public class AlertRabbit {
                         .build();
                 scheduler.scheduleJob(job, trigger);
                 Thread.sleep(10000);
-            scheduler.shutdown();
-            System.out.println(cn);
+                scheduler.shutdown();
+            } catch (Exception se) {
+                se.printStackTrace();
+            }
+
         } catch (Exception se) {
             se.printStackTrace();
         }
     }
 
     public static class Rabbit implements Job {
-
         public Rabbit() {
             System.out.println(hashCode());
-
         }
 
         @Override
         public void execute(JobExecutionContext context) throws JobExecutionException {
             System.out.println("Rabbit runs here ...");
-            cn = (Connection) context.getJobDetail().getJobDataMap().get("postgresql");
-            Timestamp timestampFromLDT = Timestamp.valueOf(created);
+            Connection cn = (Connection) context.getJobDetail().getJobDataMap().get("postgresql");
+            Timestamp timestampFromLDT = Timestamp.valueOf(LocalDateTime.now());
             try (PreparedStatement statement =
                          cn.prepareStatement("insert into rabbit(created_date) values(?);")) {
-                 statement.setTimestamp(1, timestampFromLDT);
+                statement.setTimestamp(1, timestampFromLDT);
                 statement.execute();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -72,21 +71,28 @@ public class AlertRabbit {
         }
     }
 
-    public int readProperties() throws FileNotFoundException {
+    public Properties readProperties() throws IOException {
         Properties config = new Properties();
         try (InputStream io = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
             config.load(io);
-            Class.forName(config.getProperty("driver-class-name"));
-            cn = DriverManager.getConnection(
-                    config.getProperty("url"),
-                    config.getProperty("username"),
-                    config.getProperty("password")
-            );
-        } catch (IOException | ClassNotFoundException | SQLException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        String value = config.getProperty("rabbit.interval");
-        return Integer.parseInt(value);
+        return config;
+    }
 
+    public Connection initCon(Properties properties) throws ClassNotFoundException, SQLException {
+        Class.forName(properties.getProperty("driver-class-name"));
+        Connection cn = null;
+        try {
+            cn = DriverManager.getConnection(
+                    properties.getProperty("url"),
+                    properties.getProperty("username"),
+                    properties.getProperty("password")
+            );
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cn;
     }
 }
