@@ -18,6 +18,8 @@ public class SqlRuParse {
             System.out.println(href.attr("href"));
             System.out.println(href.text());
             System.out.println(parent.child(5).text());
+            SqlRuDateTimeParser timeParser = new SqlRuDateTimeParser();
+            System.out.println(timeParser.parse(parent.child(5).text()));
         }
     }
 }
