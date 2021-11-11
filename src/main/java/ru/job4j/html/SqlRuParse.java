@@ -5,12 +5,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.job4j.utils.SqlRuDateTimeParser;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class SqlRuParse {
     public static void main(String[] args) throws Exception {
-        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
+        for (int page = 1; page <= 5; page++) {
+        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers/" + page).get();
         Elements row = doc.select(".postslisttopic");
         for (Element td : row) {
             Element href = td.child(0);
@@ -20,6 +19,7 @@ public class SqlRuParse {
             System.out.println(parent.child(5).text());
             SqlRuDateTimeParser timeParser = new SqlRuDateTimeParser();
             System.out.println(timeParser.parse(parent.child(5).text()));
+        }
         }
     }
 }
