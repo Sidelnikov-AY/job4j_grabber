@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import ru.job4j.utils.SqlRuDateTimeParser;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
