@@ -5,12 +5,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 public class SqlRuDateTimeParser implements DateTimeParser {
+    final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+    final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
     private static final Map<String, String> MONTHS = Map.ofEntries(
             Map.entry("янв", "01"),
@@ -31,8 +30,6 @@ public class SqlRuDateTimeParser implements DateTimeParser {
     public LocalDateTime parse(String parse) {
         LocalDate date;
         LocalTime time;
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         String[] temp = parse.split(",");
         String[] tempTime = temp[1].split(":");
         String tempHour = tempTime[0].trim();
@@ -50,7 +47,6 @@ public class SqlRuDateTimeParser implements DateTimeParser {
             String tempYear = tempDate[2];
             date = LocalDate.parse("20" + tempYear + "-" + tempMonth + "-" + tempDay, dateFormatter);
         }
-
         return date.atTime(time);
     }
 }
