@@ -6,10 +6,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import java.io.*;
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-
 import static org.quartz.JobBuilder.*;
 import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
@@ -19,15 +16,14 @@ public class AlertRabbit {
     public AlertRabbit() {
     }
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException {
         AlertRabbit ar = new AlertRabbit();
-        try {
+        Properties prop = ar.readProperties();
+        try (Connection cn = ar.initCon(prop)) {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
             JobDataMap data = new JobDataMap();
-            int interval = Integer.parseInt(ar.readProperties().getProperty("rabbit.interval"));
-            try (Connection cn = ar.initCon(ar.readProperties())) {
+            int interval = Integer.parseInt(prop.getProperty("rabbit.interval"));
                 data.put("postgresql", cn);
                 JobDetail job = newJob(Rabbit.class)
                         .usingJobData(data)
@@ -42,10 +38,6 @@ public class AlertRabbit {
                 scheduler.scheduleJob(job, trigger);
                 Thread.sleep(10000);
                 scheduler.shutdown();
-            } catch (Exception se) {
-                se.printStackTrace();
-            }
-
         } catch (Exception se) {
             se.printStackTrace();
         }
@@ -83,16 +75,11 @@ public class AlertRabbit {
 
     public Connection initCon(Properties properties) throws ClassNotFoundException, SQLException {
         Class.forName(properties.getProperty("driver-class-name"));
-        Connection cn = null;
-        try {
-            cn = DriverManager.getConnection(
+        Connection cn = DriverManager.getConnection(
                     properties.getProperty("url"),
                     properties.getProperty("username"),
                     properties.getProperty("password")
             );
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
         return cn;
     }
 }
