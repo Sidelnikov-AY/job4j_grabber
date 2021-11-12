@@ -12,14 +12,24 @@ public class Post {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Post post = (Post) o;
 
-        if (id != post.id) return false;
-        if (link != null ? !link.equals(post.link) : post.link != null) return false;
-        if (description != null ? !description.equals(post.description) : post.description != null) return false;
+        if (id != post.id) {
+            return false;
+        }
+        if (link != null ? !link.equals(post.link) : post.link != null) {
+            return false;
+        }
+        if (description != null ? !description.equals(post.description) : post.description != null) {
+            return false;
+        }
         return localDateTime != null ? localDateTime.equals(post.localDateTime) : post.localDateTime == null;
     }
 
@@ -34,12 +44,12 @@ public class Post {
 
     @Override
     public String toString() {
-        return "Post{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", link='" + link + '\'' +
-                ", description='" + description + '\'' +
-                ", localDateTime=" + localDateTime +
-                '}';
+        return "Post{"
+                + "id=" + id
+                + ", title='" + title + '\''
+                + ", link='" + link + '\''
+                + ", description='" + description + '\''
+                + ", localDateTime=" + localDateTime
+                + '}';
     }
 }
