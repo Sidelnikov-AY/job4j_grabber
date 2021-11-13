@@ -11,6 +11,17 @@ public class Post {
     private LocalDateTime localDateTime;
 
     @Override
+    public String toString() {
+        return "Post{"
+                + "id=" + id
+                + ", title='" + title + '\''
+                + ", link='" + link + '\''
+                + ", description='" + description + '\''
+                + ", localDateTime=" + localDateTime
+                + '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -24,10 +35,10 @@ public class Post {
         if (id != post.id) {
             return false;
         }
-        if (link != null ? !link.equals(post.link) : post.link != null) {
+        if (title != null ? !title.equals(post.title) : post.title != null) {
             return false;
         }
-        if (description != null ? !description.equals(post.description) : post.description != null) {
+        if (link != null ? !link.equals(post.link) : post.link != null) {
             return false;
         }
         return localDateTime != null ? localDateTime.equals(post.localDateTime) : post.localDateTime == null;
@@ -36,20 +47,9 @@ public class Post {
     @Override
     public int hashCode() {
         int result = id;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (link != null ? link.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (localDateTime != null ? localDateTime.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Post{"
-                + "id=" + id
-                + ", title='" + title + '\''
-                + ", link='" + link + '\''
-                + ", description='" + description + '\''
-                + ", localDateTime=" + localDateTime
-                + '}';
     }
 }
