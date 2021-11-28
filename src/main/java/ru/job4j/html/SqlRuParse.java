@@ -32,7 +32,7 @@ public class SqlRuParse implements Parse {
             Elements row = doc.select(".postslisttopic");
             for (Element td : row) {
                 String hrefString = td.child(0).attr("href");
-                if (hrefString.contains("java") || hrefString.contains("Java")) {
+                if (hrefString.toLowerCase().contains("java") && !hrefString.toLowerCase().contains("javascript")) {
                     posts.add(detail(hrefString));
                 }
             }
@@ -46,7 +46,6 @@ public class SqlRuParse implements Parse {
     @Override
     public Post detail(String link) {
         Post rsl = null;
-        SqlRuParse srp = new SqlRuParse(dateTimeParser);
         try {
             Document post = Jsoup.connect(link).get();
             Elements table = post.select(".msgTable");
@@ -56,7 +55,7 @@ public class SqlRuParse implements Parse {
                 Element date = td2.child(0).child(2).child(0);
                 String[] dateArr = date.text().split("\\[");
                 rsl = new Post(0, title.text(), link,
-                        description.text(), srp.dateTimeParser.parse(dateArr[0].trim()));
+                        description.text(), this.dateTimeParser.parse(dateArr[0].trim()));
                 break;
             }
         } catch (IOException e) {
