@@ -41,11 +41,12 @@ on p.company_id = c.id and c.id <> 5;
 
 --2. Необходимо выбрать название компании с максимальным количеством человек
 --+ количество человек в этой компании.
-select c.name, count(p.company_id)
+with temp as (
+select c.name, count(p.company_id) as cn
 from company c
 join person p
-on c.id = p.company_id
-group by c.name
-order by count(p.company_id) desc
-limit 1
+on c.id = p.company_id group by c.name
+)
+select * from temp where temp.cn = (select MAX(temp.cn) from temp)
+
 
