@@ -30,6 +30,7 @@ insert into person(id, name, company_id) values (8, 'person_D2', 4);
 insert into person(id, name, company_id) values (9, 'person_E1', 5);
 insert into person(id, name, company_id) values (10, 'person_E2', 5);
 insert into person(id, name, company_id) values (11, 'person_E3', 5);
+insert into person(id, name, company_id) values (12, 'person_В3', 4);
 
 --1. В одном запросе получить
 --- имена всех person, которые не состоят в компании с id = 5;
@@ -49,4 +50,12 @@ on c.id = p.company_id group by c.name
 )
 select * from temp where temp.cn = (select MAX(temp.cn) from temp)
 
-
+select c.name, count(p.company_id) as cn
+from company c
+join person p
+on c.id = p.company_id group by c.name
+having count(p.name) = (select count(p.name)
+from person p
+group by p.company_id
+order by count(p.company_id)
+desc limit 1)
